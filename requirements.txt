@@ -1,0 +1,17 @@
+fastapi
+pandas
+uvicorn
+langchain
+langchain-community
+langchain-huggingface
+langchain-groq
+sentence-transformers
+faiss-cpu
+einops
+python-dotenv
+pypdf
+streamlit 
+requests
+langchain-google-genai
+openpyxl
+-e .
