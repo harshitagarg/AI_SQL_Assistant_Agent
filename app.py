@@ -18,26 +18,27 @@ with st.sidebar:
     if uploaded_file:
         if "db_path" not in st.session_state or st.session_state.get("filename") != uploaded_file.name:
             with st.spinner("Loading file into database..."):
-                db_path, table_name, columns = load_file_to_db(uploaded_file)
+                db_path, all_tables, all_columns = load_file_to_db(uploaded_file)
                 st.session_state.db_path = db_path
-                st.session_state.table_name = table_name
-                st.session_state.columns = columns
-                st.session_state.system_prompt = get_system_prompt(table_name, columns)
+                st.session_state.all_tables = all_tables
+                st.session_state.all_columns = all_columns
+                st.session_state.system_prompt = get_system_prompt(all_tables, all_columns)
                 st.session_state.filename = uploaded_file.name
                 st.session_state.chat_history = []  # reset on new file
-            st.success(f"✅ Loaded: {uploaded_file.name}")
+            st.success(f"✅ Loaded: {uploaded_file.name} — {len(all_tables)} sheet(s) found")
 
-        # Show DB info
+        # Show all tables in sidebar
         if "db_path" in st.session_state:
             st.divider()
-            st.markdown("**Database info**")
+            st.markdown("**Sheets loaded as tables**")
             db_info = get_db_info(st.session_state.db_path)
             for table, count in db_info.items():
                 st.markdown(f"- `{table}`: {count:,} rows")
-            st.divider()
-            st.markdown("**Columns**")
-            for col in st.session_state.columns:
-                st.markdown(f"- `{col}`")
+                # Show columns under each table
+                cols = st.session_state.all_columns.get(table, [])
+                with st.expander(f"Columns in {table}"):
+                    for col in cols:
+                        st.markdown(f"  - `{col}`")
 
     if st.button("🗑️ Clear chat"):
         st.session_state.chat_history = []
